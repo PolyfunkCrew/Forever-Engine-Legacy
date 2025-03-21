@@ -1,14 +1,16 @@
 package meta;
 
-import lime.utils.Assets;
+import openfl.utils.Assets;
 import meta.state.PlayState;
 
 using StringTools;
 
 #if sys
 import sys.FileSystem;
+import polymod.Polymod;
 #end
 
+@:access(polymod.Polymod)
 class CoolUtil
 {
 	public static final difficultyArray:Array<String> = ['EASY', "NORMAL", "HARD"];
@@ -57,16 +59,32 @@ class CoolUtil
 	public static inline function returnAssetsLibrary(library:String, ?subDir:String = 'assets/images'):Array<String>
 	{
 		var libraryArray:Array<String> = [];
+		var mergedDir = '$subDir/$library';
 
 		#if sys
-		var unfilteredLibrary = FileSystem.readDirectory('$subDir/$library');
+		var unfilteredLibrary = FileSystem.readDirectory(mergedDir);
 
 		for (folder in unfilteredLibrary)
 		{
 			if (!folder.contains('.'))
 				libraryArray.push(folder);
 		}
-		//trace(libraryArray);
+
+		// insert files added via Polymod.
+		if (Polymod.assetLibrary != null)
+		{
+			for (modFolder in Polymod.getLoadedModIds())
+			{
+				if (FileSystem.exists('mods/$modFolder/' + mergedDir.split("assets/")[1]))
+				{
+					for (file in FileSystem.readDirectory('mods/$modFolder/' + mergedDir.split("assets/")[1]))
+					{
+						if (!libraryArray.contains(file) && !file.contains('.'))
+								libraryArray.push(file);
+					}
+				}
+			}
+		}
 		#end
 
 		return libraryArray;

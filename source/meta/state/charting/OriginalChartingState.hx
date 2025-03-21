@@ -24,7 +24,7 @@ import gameObjects.*;
 import gameObjects.userInterface.*;
 import gameObjects.userInterface.notes.*;
 import haxe.Json;
-import lime.utils.Assets;
+import openfl.utils.Assets;
 import meta.MusicBeat.MusicBeatState;
 import meta.data.*;
 import meta.data.Conductor.BPMChangeEvent;

@@ -12,14 +12,13 @@ import flixel.tweens.FlxTween;
 import flixel.tweens.misc.ColorTween;
 import flixel.util.FlxColor;
 import gameObjects.userInterface.HealthIcon;
-import lime.utils.Assets;
 import meta.MusicBeat.MusicBeatState;
 import meta.data.*;
 import meta.data.Song.SwagSong;
 import meta.data.dependency.Discord;
 import meta.data.font.Alphabet;
 import openfl.media.Sound;
-import sys.FileSystem;
+import openfl.utils.Assets;
 #if target.threaded
 import sys.thread.Mutex;
 import sys.thread.Thread;
@@ -92,7 +91,7 @@ class FreeplayState extends MusicBeatState
 			if (!existingSongs.contains(i.toLowerCase()))
 			{
 				var icon:String = 'gf';
-				var chartExists:Bool = FileSystem.exists(Paths.songJson(i, i));
+				var chartExists:Bool = Assets.exists(Paths.songJson(i, i));
 				if (chartExists)
 				{
 					var castSong:SwagSong = Song.loadFromJson(i, i);
@@ -167,8 +166,8 @@ class FreeplayState extends MusicBeatState
 		///*
 		var coolDifficultyArray = [];
 		for (i in CoolUtil.difficultyArray)
-			if (FileSystem.exists(Paths.songJson(songName, songName + '-' + i))
-				|| (FileSystem.exists(Paths.songJson(songName, songName)) && i == "NORMAL"))
+			if (Assets.exists(Paths.songJson(songName, songName + '-' + i))
+				|| (Assets.exists(Paths.songJson(songName, songName)) && i == "NORMAL"))
 				coolDifficultyArray.push(i);
 
 		if (coolDifficultyArray.length > 0)

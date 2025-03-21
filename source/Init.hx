@@ -248,6 +248,9 @@ class Init extends FlxState
 		// apply saved filters
 		FlxG.game.setFilters(filters);
 
+		// load Mods
+		modding.PolymodHandler.init();
+
 		// Some additional changes to default HaxeFlixel settings, both for ease of debugging and usability.
 		FlxG.fixedTimestep = false; // This ensures that the game is not tied to the FPS
 		FlxG.mouse.useSystemCursor = true; // Use system cursor because it's prettier

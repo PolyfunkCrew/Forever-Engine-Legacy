@@ -2,7 +2,7 @@ package meta.data;
 
 import haxe.Json;
 import haxe.format.JsonParser;
-import lime.utils.Assets;
+import openfl.utils.Assets;
 import meta.data.Section.SwagSection;
 import sys.io.File;
 

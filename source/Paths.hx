@@ -6,16 +6,13 @@ package;
 import flixel.FlxG;
 import flixel.graphics.FlxGraphic;
 import flixel.graphics.frames.FlxAtlasFrames;
-import lime.utils.Assets;
 import meta.CoolUtil;
 import openfl.display.BitmapData;
 import openfl.display3D.textures.Texture;
 import openfl.media.Sound;
 import openfl.system.System;
 import openfl.utils.AssetType;
-import openfl.utils.Assets as OpenFlAssets;
-import sys.FileSystem;
-import sys.io.File;
+import openfl.utils.Assets;
 
 class Paths
 {
@@ -125,7 +122,7 @@ class Paths
 	public static function returnGraphic(key:String, ?library:String, ?textureCompression:Bool = false)
 	{
 		var path = getPath('images/$key.png', IMAGE, library);
-		if (FileSystem.exists(path))
+		if (Assets.exists(path))
 		{
 			if (!currentTrackedAssets.exists(key))
 			{
@@ -195,7 +192,7 @@ class Paths
 		}*/
 
 		var levelPath = getLibraryPathForce(file, "mods");
-		if (OpenFlAssets.exists(levelPath, type))
+		if (Assets.exists(levelPath, type))
 			return levelPath;
 
 		return getPreloadPath(file);
@@ -231,7 +228,7 @@ class Paths
 	inline static function getPreloadPath(file:String)
 	{
 		var returnPath:String = 'assets/$file';
-		if (!FileSystem.exists(returnPath))
+		if (!Assets.exists(returnPath))
 			returnPath = CoolUtil.swapSpaceDash(returnPath);
 		return returnPath;
 	}
@@ -309,7 +306,7 @@ class Paths
 	inline static public function getSparrowAtlas(key:String, ?library:String)
 	{
 		var graphic:FlxGraphic = returnGraphic(key, library);
-		return (FlxAtlasFrames.fromSparrow(graphic, File.getContent(file('images/$key.xml', library))));
+		return (FlxAtlasFrames.fromSparrow(graphic, Assets.getText(file('images/$key.xml', library))));
 	}
 
 	inline static public function getPackerAtlas(key:String, ?library:String)
