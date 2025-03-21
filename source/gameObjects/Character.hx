@@ -38,13 +38,13 @@ class Character extends FNFSprite
 	public var characterData:CharacterData;
 	public var adjustPos:Bool = true;
 
-	public function new(?isPlayer:Bool = false)
+	public function new(?x:Float = 0, ?y:Float = 0, ?isPlayer:Bool = false)
 	{
 		super(x, y);
 		this.isPlayer = isPlayer;
 	}
 
-	public function setCharacter(x:Float, y:Float, character:String):Character
+	public function setCharacter(character:String):Character
 	{
 		curCharacter = character;
 		var tex:FlxAtlasFrames;
@@ -478,7 +478,7 @@ class Character extends FNFSprite
 					}
 				}
 				else
-					return setCharacter(x, y, 'bf');
+					return setCharacter('bf');
 		}
 
 		// set up offsets cus why not

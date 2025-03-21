@@ -229,32 +229,29 @@ class PlayState extends MusicBeatState
 		displayRating('sick', true, true);
 		popUpCombo(true);
 
+		// set up characters here too
+		gf = new Character(300, 100);
+		gf.adjustPos = false;
+		gf.scrollFactor.set(0.95, 0.95);
+
+		opponent = new Character(50, 850).setCharacter(SONG.player2);
+		boyfriend = new Boyfriend(750, 850);
+		boyfriend.setCharacter(SONG.player1);
+		// if you want to change characters later use setCharacter() instead of new or it will break
+
+		var camPos:FlxPoint = new FlxPoint(gf.getMidpoint().x - 100, boyfriend.getMidpoint().y - 100);
+
 		if(ScriptedStage.listScriptClasses().contains(CoolUtil.capitalize(curStage)) || curStage == "default"){
-			trace("stage class exists: " + CoolUtil.capitalize(curStage));
 			stageBuild = ScriptedStage.init(CoolUtil.capitalize(curStage));
 		}
 		else
 		{
 			stageBuild = new Stage();
-			stageBuild.loadHardStage(curStage);
+			stageBuild.loadDefault();
 		}
 		add(stageBuild);
-
-		// set up characters here too
-		gf = new Character();
-		gf.adjustPos = false;
-		gf.setCharacter(300, 100, stageBuild.returnGFtype(curStage));
-		gf.scrollFactor.set(0.95, 0.95);
-
-		opponent = new Character().setCharacter(50, 850, SONG.player2);
-		boyfriend = new Boyfriend();
-		boyfriend.setCharacter(750, 850, SONG.player1);
-		// if you want to change characters later use setCharacter() instead of new or it will break
-
-		var camPos:FlxPoint = new FlxPoint(gf.getMidpoint().x - 100, boyfriend.getMidpoint().y - 100);
-
-		stageBuild.repositionPlayers(curStage, boyfriend, opponent, gf);
-		stageBuild.dadPosition(curStage, boyfriend, opponent, gf, camPos);
+		// set gf version
+		gf.setCharacter(stageBuild.gfType);
 
 		if (SONG.assetModifier != null && SONG.assetModifier.length > 1)
 			assetModifier = SONG.assetModifier;
@@ -265,10 +262,6 @@ class PlayState extends MusicBeatState
 
 		// add characters
 		add(gf);
-
-		// add limo cus dumb layering
-		if (curStage == 'highway')
-			add(stageBuild.limo);
 
 		add(opponent);
 		add(boyfriend);
@@ -1508,29 +1501,7 @@ class PlayState extends MusicBeatState
 		uiHUD.beatHit();
 		charactersDance(curBeat);
 
-		// stage stuffs
-		stageBuild.stageUpdate(curBeat, boyfriend, gf, opponent);
 		signals.onBeatHit.dispatch(curBeat);
-
-		if (curSong.toLowerCase() == 'bopeebo')
-		{
-			switch (curBeat)
-			{
-				case 128, 129, 130:
-					vocals.volume = 0;
-			}
-		}
-
-		if (curSong.toLowerCase() == 'fresh')
-		{
-			switch (curBeat)
-			{
-				case 16 | 80:
-					gfSpeed = 2;
-				case 48 | 112:
-					gfSpeed = 1;
-			}
-		}
 
 		if (curSong.toLowerCase() == 'milf'
 			&& curBeat >= 168

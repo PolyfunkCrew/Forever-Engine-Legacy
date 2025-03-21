@@ -61,6 +61,8 @@ class PolymodHandler
 
 	static function addDefaultImports()
 	{
+		Polymod.addDefaultImport(StringTools);
+
 		// Flixel
 		Polymod.addDefaultImport(flixel.FlxG);
 		Polymod.addDefaultImport(flixel.FlxSprite);

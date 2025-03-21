@@ -11,8 +11,8 @@ class Boyfriend extends Character
 {
 	public var stunned:Bool = false;
 
-	public function new()
-		super(true);
+	public function new(?x:Float, ?y:Float)
+		super(x, y, true);
 
 	override function update(elapsed:Float)
 	{
