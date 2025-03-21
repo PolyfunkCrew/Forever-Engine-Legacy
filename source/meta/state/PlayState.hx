@@ -38,6 +38,8 @@ import openfl.events.KeyboardEvent;
 import openfl.filters.ShaderFilter;
 import openfl.media.Sound;
 import openfl.utils.Assets;
+import flixel.util.FlxSignal;
+import modding.scripted.*;
 
 using StringTools;
 
@@ -139,6 +141,8 @@ class PlayState extends MusicBeatState
 
 	public var comboGroup:FlxSpriteGroup;
 
+	public var signals:PlayStateSignals = new PlayStateSignals();
+
 	function resetStatics()
 	{
 		// reset any values and variables that are static
@@ -191,6 +195,31 @@ class PlayState extends MusicBeatState
 		// call the song's stage if it exists
 		if (SONG.stage != null)
 			curStage = SONG.stage;
+		// get hardcoded stage type if chart is fnf style
+		else if (determinedChartType == "FNF")
+		{
+			// this is because I want to avoid editing the fnf chart type
+			// custom stage stuffs will come with forever charts
+			switch (CoolUtil.spaceToDash(SONG.song.toLowerCase()))
+			{
+				case 'spookeez' | 'south' | 'monster':
+					curStage = 'spooky';
+				case 'pico' | 'blammed' | 'philly-nice':
+					curStage = 'philly';
+				case 'milf' | 'satin-panties' | 'high':
+					curStage = 'highway';
+				case 'cocoa' | 'eggnog':
+					curStage = 'mall';
+				case 'winter-horrorland':
+					curStage = 'mallEvil';
+				case 'senpai' | 'roses':
+					curStage = 'school';
+				case 'thorns':
+					curStage = 'schoolEvil';
+				default:
+					curStage = 'stage';
+			}
+			}
 
 		comboGroup = new FlxSpriteGroup();
 		if (Init.trueSettings.get('Fixed Judgements'))
@@ -199,9 +228,16 @@ class PlayState extends MusicBeatState
 		// cache shit
 		displayRating('sick', true, true);
 		popUpCombo(true);
-		//
 
-		stageBuild = new Stage(curStage);
+		if(ScriptedStage.listScriptClasses().contains(CoolUtil.capitalize(curStage)) || curStage == "default"){
+			trace("stage class exists: " + CoolUtil.capitalize(curStage));
+			stageBuild = ScriptedStage.init(CoolUtil.capitalize(curStage));
+		}
+		else
+		{
+			stageBuild = new Stage();
+			stageBuild.loadHardStage(curStage);
+		}
 		add(stageBuild);
 
 		// set up characters here too
@@ -478,8 +514,6 @@ class PlayState extends MusicBeatState
 
 	override public function update(elapsed:Float)
 	{
-		stageBuild.stageUpdateConstant(elapsed, boyfriend, gf, opponent);
-
 		super.update(elapsed);
 
 		if (health > 2)
@@ -1439,6 +1473,7 @@ class PlayState extends MusicBeatState
 		if (songMusic.time >= Conductor.songPosition + 20 || songMusic.time <= Conductor.songPosition - 20)
 			resyncVocals();
 		//*/
+		signals.onStepHit.dispatch(curBeat);
 	}
 
 	private function charactersDance(curBeat:Int)
@@ -1475,6 +1510,7 @@ class PlayState extends MusicBeatState
 
 		// stage stuffs
 		stageBuild.stageUpdate(curBeat, boyfriend, gf, opponent);
+		signals.onBeatHit.dispatch(curBeat);
 
 		if (curSong.toLowerCase() == 'bopeebo')
 		{
@@ -1894,4 +1930,12 @@ class PlayState extends MusicBeatState
 			cast(Object, FlxSprite).antialiasing = false;
 		return super.add(Object);
 	}
+}
+
+class PlayStateSignals
+{	
+	public function new(){}
+
+	public var onStepHit = new FlxTypedSignal<Int -> Void>();
+	public var onBeatHit = new FlxTypedSignal<Int -> Void>();
 }

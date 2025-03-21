@@ -32,9 +32,6 @@ class Stage extends FlxTypedGroup<FlxBasic>
 	public var cameraSpeed:Float = 1.0;
 
 	var halloweenBG:FNFSprite;
-	var phillyCityLights:FlxTypedGroup<FNFSprite>;
-	var phillyTrain:FNFSprite;
-	var trainSound:FlxSound;
 
 	public var limo:FNFSprite;
 
@@ -48,55 +45,30 @@ class Stage extends FlxTypedGroup<FlxBasic>
 
 	var bgGirls:BackgroundGirls;
 
-	public var curStage:String;
-
 	var daPixelZoom = PlayState.daPixelZoom;
 
 	public var foreground:FlxTypedGroup<FlxBasic>;
 
-	public function new(curStage)
+	public function new()
 	{
 		super();
-		this.curStage = curStage;
-
-		/// get hardcoded stage type if chart is fnf style
-		if (PlayState.determinedChartType == "FNF")
-		{
-			// this is because I want to avoid editing the fnf chart type
-			// custom stage stuffs will come with forever charts
-			switch (CoolUtil.spaceToDash(PlayState.SONG.song.toLowerCase()))
-			{
-				case 'spookeez' | 'south' | 'monster':
-					curStage = 'spooky';
-				case 'pico' | 'blammed' | 'philly-nice':
-					curStage = 'philly';
-				case 'milf' | 'satin-panties' | 'high':
-					curStage = 'highway';
-				case 'cocoa' | 'eggnog':
-					curStage = 'mall';
-				case 'winter-horrorland':
-					curStage = 'mallEvil';
-				case 'senpai' | 'roses':
-					curStage = 'school';
-				case 'thorns':
-					curStage = 'schoolEvil';
-				default:
-					curStage = 'stage';
-			}
-
-			PlayState.curStage = curStage;
-		}
-
 		// to apply to foreground use foreground.add(); instead of add();
 		foreground = new FlxTypedGroup<FlxBasic>();
 
-		//
+		PlayState.current.signals.onStepHit.add(stepHit);
+		PlayState.current.signals.onBeatHit.add(beatHit);
+	}
+
+	public function stepHit(step:Int){}
+	public function beatHit(beat:Int){}
+
+	public function loadHardStage(stage:String)
+	{
+		var curStage = stage;
+		
 		switch (curStage)
 		{
 			case 'spooky':
-				curStage = 'spooky';
-				// halloweenLevel = true;
-
 				var hallowTex = Paths.getSparrowAtlas('backgrounds/' + curStage + '/halloween_bg');
 
 				halloweenBG = new FNFSprite(-200, -100);
@@ -106,50 +78,7 @@ class Stage extends FlxTypedGroup<FlxBasic>
 				halloweenBG.animation.play('idle');
 				halloweenBG.antialiasing = true;
 				add(halloweenBG);
-
-			// isHalloween = true;
-			case 'philly':
-				curStage = 'philly';
-
-				var bg:FNFSprite = new FNFSprite(-100).loadGraphic(Paths.image('backgrounds/' + curStage + '/sky'));
-				bg.scrollFactor.set(0.1, 0.1);
-				add(bg);
-
-				var city:FNFSprite = new FNFSprite(-10).loadGraphic(Paths.image('backgrounds/' + curStage + '/city'));
-				city.scrollFactor.set(0.3, 0.3);
-				city.setGraphicSize(Std.int(city.width * 0.85));
-				city.updateHitbox();
-				add(city);
-
-				phillyCityLights = new FlxTypedGroup<FNFSprite>();
-				add(phillyCityLights);
-
-				for (i in 0...5)
-				{
-					var light:FNFSprite = new FNFSprite(city.x).loadGraphic(Paths.image('backgrounds/' + curStage + '/win' + i));
-					light.scrollFactor.set(0.3, 0.3);
-					light.visible = false;
-					light.setGraphicSize(Std.int(light.width * 0.85));
-					light.updateHitbox();
-					light.antialiasing = true;
-					phillyCityLights.add(light);
-				}
-
-				var streetBehind:FNFSprite = new FNFSprite(-40, 50).loadGraphic(Paths.image('backgrounds/' + curStage + '/behindTrain'));
-				add(streetBehind);
-
-				phillyTrain = new FNFSprite(2000, 360).loadGraphic(Paths.image('backgrounds/' + curStage + '/train'));
-				add(phillyTrain);
-
-				trainSound = new FlxSound().loadEmbedded(Paths.sound('train_passes'));
-				FlxG.sound.list.add(trainSound);
-
-				// var cityLights:FNFSprite = new FNFSprite().loadGraphic(AssetPaths.win0.png);
-
-				var street:FNFSprite = new FNFSprite(-40, streetBehind.y).loadGraphic(Paths.image('backgrounds/' + curStage + '/street'));
-				add(street);
 			case 'highway':
-				curStage = 'highway';
 				cameraZoom = 0.90;
 
 				var skyBG:FNFSprite = new FNFSprite(-120, -50).loadGraphic(Paths.image('backgrounds/' + curStage + '/limoSunset'));
@@ -194,7 +123,6 @@ class Stage extends FlxTypedGroup<FlxBasic>
 				fastCar = new FNFSprite(-300, 160).loadGraphic(Paths.image('backgrounds/' + curStage + '/fastCarLol'));
 			// loadArray.add(limo);
 			case 'mall':
-				curStage = 'mall';
 				cameraZoom = 0.80;
 
 				var bg:FNFSprite = new FNFSprite(-1000, -500).loadGraphic(Paths.image('backgrounds/' + curStage + '/bgWalls'));
@@ -247,7 +175,6 @@ class Stage extends FlxTypedGroup<FlxBasic>
 				santa.antialiasing = true;
 				add(santa);
 			case 'mallEvil':
-				curStage = 'mallEvil';
 				var bg:FNFSprite = new FNFSprite(-400, -500).loadGraphic(Paths.image('backgrounds/mall/evilBG'));
 				bg.antialiasing = true;
 				bg.scrollFactor.set(0.2, 0.2);
@@ -265,10 +192,6 @@ class Stage extends FlxTypedGroup<FlxBasic>
 				evilSnow.antialiasing = true;
 				add(evilSnow);
 			case 'school':
-				curStage = 'school';
-
-				// cameraZoom = 0.9;
-
 				var bgSky = new FNFSprite().loadGraphic(Paths.image('backgrounds/' + curStage + '/weebSky'));
 				bgSky.scrollFactor.set(0.1, 0.1);
 				add(bgSky);
@@ -340,8 +263,7 @@ class Stage extends FlxTypedGroup<FlxBasic>
 
 			default:
 				cameraZoom = 0.9;
-				curStage = 'stage';
-				var bg:FNFSprite = new FNFSprite(-600, -200).loadGraphic(Paths.image('backgrounds/' + curStage + '/stageback'));
+				var bg:FNFSprite = new FNFSprite(-600, -200).loadGraphic(Paths.image('backgrounds/stage/stageback'));
 				bg.antialiasing = true;
 				bg.scrollFactor.set(0.9, 0.9);
 				bg.active = false;
@@ -349,7 +271,7 @@ class Stage extends FlxTypedGroup<FlxBasic>
 				// add to the final array
 				add(bg);
 
-				var stageFront:FNFSprite = new FNFSprite(-650, 600).loadGraphic(Paths.image('backgrounds/' + curStage + '/stagefront'));
+				var stageFront:FNFSprite = new FNFSprite(-650, 600).loadGraphic(Paths.image('backgrounds/stage/stagefront'));
 				stageFront.setGraphicSize(Std.int(stageFront.width * 1.1));
 				stageFront.updateHitbox();
 				stageFront.antialiasing = true;
@@ -359,7 +281,7 @@ class Stage extends FlxTypedGroup<FlxBasic>
 				// add to the final array
 				add(stageFront);
 
-				var stageCurtains:FNFSprite = new FNFSprite(-500, -300).loadGraphic(Paths.image('backgrounds/' + curStage + '/stagecurtains'));
+				var stageCurtains:FNFSprite = new FNFSprite(-500, -300).loadGraphic(Paths.image('backgrounds/stage/stagecurtains'));
 				stageCurtains.setGraphicSize(Std.int(stageCurtains.width * 0.9));
 				stageCurtains.updateHitbox();
 				stageCurtains.antialiasing = true;
@@ -388,7 +310,7 @@ class Stage extends FlxTypedGroup<FlxBasic>
 				gfVersion = 'gf-pixel';
 		}
 
-		return gfVersion;
+		return 'gf';
 	}
 
 	// get the dad's position
@@ -451,15 +373,6 @@ class Stage extends FlxTypedGroup<FlxBasic>
 		}
 	}
 
-	var curLight:Int = 0;
-	var trainMoving:Bool = false;
-	var trainFrameTiming:Float = 0;
-
-	var trainCars:Int = 8;
-	var trainFinishing:Bool = false;
-	var trainCooldown:Int = 0;
-	var startedMoving:Bool = false;
-
 	public function stageUpdate(curBeat:Int, boyfriend:Boyfriend, gf:Character, dadOpponent:Character)
 	{
 		// trace('update backgrounds');
@@ -478,106 +391,7 @@ class Stage extends FlxTypedGroup<FlxBasic>
 
 			case 'school':
 				bgGirls.dance();
-
-			case 'philly':
-				if (!trainMoving)
-					trainCooldown += 1;
-
-				if (curBeat % 4 == 0)
-				{
-					var lastLight:FlxSprite = phillyCityLights.members[0];
-
-					phillyCityLights.forEach(function(light:FNFSprite)
-					{
-						// Take note of the previous light
-						if (light.visible == true)
-							lastLight = light;
-
-						light.visible = false;
-					});
-
-					// To prevent duplicate lights, iterate until you get a matching light
-					while (lastLight == phillyCityLights.members[curLight])
-					{
-						curLight = FlxG.random.int(0, phillyCityLights.length - 1);
-					}
-
-					phillyCityLights.members[curLight].visible = true;
-					phillyCityLights.members[curLight].alpha = 1;
-
-					FlxTween.tween(phillyCityLights.members[curLight], {alpha: 0}, Conductor.stepCrochet * .016);
-				}
-
-				if (curBeat % 8 == 4 && FlxG.random.bool(30) && !trainMoving && trainCooldown > 8)
-				{
-					trainCooldown = FlxG.random.int(-4, 0);
-					trainStart();
-				}
 		}
-	}
-
-	public function stageUpdateConstant(elapsed:Float, boyfriend:Boyfriend, gf:Character, dadOpponent:Character)
-	{
-		switch (PlayState.curStage)
-		{
-			case 'philly':
-				if (trainMoving)
-				{
-					trainFrameTiming += elapsed;
-
-					if (trainFrameTiming >= 1 / 24)
-					{
-						updateTrainPos(gf);
-						trainFrameTiming = 0;
-					}
-				}
-		}
-	}
-
-	// PHILLY STUFFS!
-	function trainStart():Void
-	{
-		trainMoving = true;
-		if (!trainSound.playing)
-			trainSound.play(true);
-	}
-
-	function updateTrainPos(gf:Character):Void
-	{
-		if (trainSound.time >= 4700)
-		{
-			startedMoving = true;
-			gf.playAnim('hairBlow');
-		}
-
-		if (startedMoving)
-		{
-			phillyTrain.x -= 400;
-
-			if (phillyTrain.x < -2000 && !trainFinishing)
-			{
-				phillyTrain.x = -1150;
-				trainCars -= 1;
-
-				if (trainCars <= 0)
-					trainFinishing = true;
-			}
-
-			if (phillyTrain.x < -4000 && trainFinishing)
-				trainReset(gf);
-		}
-	}
-
-	function trainReset(gf:Character):Void
-	{
-		gf.playAnim('hairFall');
-		phillyTrain.x = FlxG.width + 200;
-		trainMoving = false;
-		// trainSound.stop();
-		// trainSound.time = 0;
-		trainCars = 8;
-		trainFinishing = false;
-		startedMoving = false;
 	}
 
 	override function add(Object:FlxBasic):FlxBasic

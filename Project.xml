@@ -79,4 +79,7 @@
 	<icon path="art/icon512.png" size='512' />
 	<icon path="art/iconOG.png" />
 
+	<haxedef name="POLYMOD_SCRIPT_CLASS_EXT" value="hx" />
+	<haxedef name="hscriptPos" />
+
 </project>

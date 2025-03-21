@@ -10,6 +10,8 @@ import sys.FileSystem;
 import polymod.Polymod;
 #end
 
+using StringTools;
+
 @:access(polymod.Polymod)
 class CoolUtil
 {
@@ -105,4 +107,15 @@ class CoolUtil
 	{
 		return [for (i in min...max) i];
 	}
+
+	public static function capitalize(str:String):String
+	{
+		return str.substr(0, 1).toUpperCase() + str.substr(1).toLowerCase();
+	}
+
+	public static function createGroup()
+		return new flixel.group.FlxGroup();
+
+	public static function createSpriteGroup()
+		return new flixel.group.FlxSpriteGroup();
 }
